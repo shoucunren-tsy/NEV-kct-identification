@@ -7,7 +7,6 @@
 # ---------- 路径 ----------
 paths:
   data_raw: "data/raw"            # 原始数据目录（自备）
-  data_reference: "data/reference" # 参考数据（IPC 对照等）
   outputs: "outputs"              # 各阶段产出根目录
 
 # ---------- 01 数据清洗 ----------

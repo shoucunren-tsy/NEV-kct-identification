@@ -1,9 +1,7 @@
 # ---------- 数据（自备，一概不入库）----------
 # 本仓库不含任何数据。data/ 仅作投放口：使用者把自备数据放进来，不进 git。
 data/raw/*
-data/reference/*
 !data/raw/.gitkeep
-!data/reference/.gitkeep
 !data/DATA_NOTES.md
 
 # ---------- 产出（可复现，不入库）----------
