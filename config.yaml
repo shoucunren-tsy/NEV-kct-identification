@@ -1,0 +1,83 @@
+# ============================================================
+# KCT_Identification 全流程配置
+# 所有可调参数集中于此，各脚本从此文件读取，不硬编码
+# 注意：数值须与对应脚本实际口径一致，改动后回源头核对
+# ============================================================
+
+# ---------- 路径 ----------
+paths:
+  data_raw: "data/raw"            # 原始数据目录（自备）
+  data_reference: "data/reference" # 参考数据（IPC 对照等）
+  outputs: "outputs"              # 各阶段产出根目录
+
+# ---------- 01 数据清洗 ----------
+cleaning:
+  year_start: 2003                # 数据年份下界
+  year_end: 2025                  # 数据年份上界
+  ipc_regex: '^[A-H]\d{2}[A-Z]'   # IPC 小类四字符格式（如 B60L）
+  ipc_prefer: "DWPI"              # 同族内优先取 DWPI 标引 IPC
+  # 缺失值处理
+  missing:
+    citation: 0                   # 引用次数缺失 → 0
+    claims: "median"              # 权利要求数缺失 → 中位数
+    family_size: 1                # 同族规模缺失 → 1
+
+# ---------- 02 指标字段 ----------
+indicators:
+  # 12 项评价指标，分 3 维度
+  dimensions:
+    技术性: 4                     # 技术影响力类
+    经济性: 4                     # 经济价值性类
+    战略性: 4                     # 战略重要性类
+
+# ---------- 03 热点技术识别 ----------
+hotspot:
+  ipc_weight: "inverse_count"     # 单专利内每 IPC 权重 = 1/该专利 IPC 数
+  min_weighted_freq: 1            # 加权频次下界（≥1 保留）
+
+# ---------- 04 共现网络 ----------
+network:
+  metric: "jaccard"               # 关联强度：Jaccard 共现系数
+  threshold_method: "percentile"  # 阈值方式
+  threshold_percentile: 90        # P90
+
+# ---------- 05 社区划分 ----------
+community:
+  algorithm: "leiden"
+  partition_type: "RBConfigurationVertexPartition"
+  seed: 42
+  # 结构洞（Burt）与中心度
+  structural_hole:
+    betweenness_weight: 0.5       # sh = w*betweenness + (1-w)*(1-constraint)
+    constraint_weight: 0.5
+
+# ---------- 06 双维度筛选 ----------
+selection:
+  top_ratio: 0.05                 # 结构洞前 5% ∪ 度中心度前 5%
+  min_community_size: 5           # 社区规模下界，过小社区剔除
+
+# ---------- 07 赋权与打分 ----------
+weighting:
+  method: "additive"              # 熵权 + CRITIC 加法组合
+  entropy:
+    k: "1/ln(n)"                  # 常数
+  critic:
+    use_abs_corr: true            # 相关系数取绝对值
+  high_score_percentile: 75       # 全体专利前 25% 为高分线
+
+# ---------- 08 关键核心技术识别 ----------
+technology:
+  selection_rule: "mean_count"    # 高分专利数 ≥ 全体均值则入选
+
+# ---------- 09 稳健性检验 ----------
+validation:
+  # 参与对比的赋权方法，实为三种。
+  # 注：早期版本曾提"四种"（多一个乘法组合），但乘法组合从未实际计算，已废弃。
+  weight_methods:
+    - "additive"                  # 加法组合（12 指标，最终采用）
+    - "entropy"                   # 纯熵权（13 指标）
+    - "critic"                    # 纯 CRITIC（13 指标）
+  threshold_schemes:              # 阈值方案对比：高分分位数（P90=前10% / P75=前25% / P50=前50%）
+    - 90
+    - 75
+    - 50

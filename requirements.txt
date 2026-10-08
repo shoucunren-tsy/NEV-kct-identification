@@ -1,0 +1,14 @@
+# KCT_Identification 依赖
+# Python >= 3.12
+
+pandas>=2.0
+numpy>=1.24
+scipy>=1.10
+networkx>=3.1
+python-igraph>=0.11
+leidenalg>=0.10
+pyarrow>=14.0            # parquet 读写
+python-calamine>=0.2     # 快速读 xlsx（替代 openpyxl，大文件更快）
+openpyxl>=3.1            # xlsx 备用引擎
+PyYAML>=6.0              # 读取 config.yaml
+tqdm>=4.66               # 进度条
