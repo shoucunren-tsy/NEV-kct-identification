@@ -57,8 +57,6 @@ nev-kct-identification/
 ├── 08_technology.py        # 08 关键核心技术识别
 ├── 09_validation.py        # 09 稳健性检验
 ├── data/                   # 仅作投放口，本仓库不含任何数据
-│   ├── raw/                # 原始数据（自备，不入库）
-│   ├── reference/          # 参考数据（IPC 对照表等，自备）
 │   └── DATA_NOTES.md       # 数据来源与获取说明
 ├── outputs/                # 各阶段产出（不入库）
 │   ├── 01_cleaning/
